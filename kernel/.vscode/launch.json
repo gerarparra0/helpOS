@@ -1,0 +1,14 @@
+{
+    "configurations": [
+    {
+        "type": "gdb",
+        "request": "attach",
+        "name": "Attach to gdbserver",
+        "executable": "qemu-system-x86_64",
+        "target": ":1234",
+        "remote": true,
+        "cwd": "${workspaceRoot}",
+        "valuesFormatting": "parseText"
+    }
+    ]
+}
