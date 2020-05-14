@@ -1,6 +1,7 @@
 #include "framebuffer.h"
 #include "descriptors.h"
 
+// called by bootboot as it hands over control
 void _start()
 {
     // 
