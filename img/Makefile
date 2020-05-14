@@ -34,7 +34,7 @@ bootpart.bin: initrd.bin
 
 	/bin/echo -e "screen=800x600\nkernel=sys/core\n" >boot/BOOTBOOT/CONFIG
 	cp initrd.bin boot/BOOTBOOT/INITRD
-	sudo /bin/umount -f boot 2>/dev/null
+	sudo /bin/umount -f boot
 	rm -r boot
 
 # create hybrid disk / cdrom image or ROM image
@@ -54,20 +54,11 @@ kernel:
 clean-kernel:
 	cd ../kernel && $(MAKE) clean
 
-bios:
-	qemu-system-x86_64 -drive file=$(DISK),format=raw -serial stdio
-
-cdrom:
-	qemu-system-x86_64 -cdrom $(DISK) -serial stdio
-
 efi: disk
 	qemu-system-x86_64 -bios $(OVMF) -m 64 -drive file=$(DISK),format=raw -serial stdio
 
 efi-debug: disk
 	qemu-system-x86_64 -s -S -bios $(OVMF) -m 64 -drive file=$(DISK),format=raw -serial stdio
-
-eficdrom:
-	qemu-system-x86_64 -bios $(OVMF) -m 64 -cdrom $(DISK) -serial stdio
 
 # clean up
 clean: clean-kernel
