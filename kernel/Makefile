@@ -4,7 +4,7 @@ BIN=$(ARCH)_kernel.elf
 CFLAGS =-Wall -fpic -ffreestanding -fno-stack-protector -nostdinc -nostdlib -g
 LDFLAGS =-nostdlib -nostartfiles -T link.ld
 
-OBJ=kernel.o framebuffer.o system.o descriptors.o
+OBJ=kernel.o framebuffer.o system.o descriptors.o interrupts.o
 
 $(BIN): $(OBJ)
 	$(ARCH)-ld -r -b binary -o font.o font.psf
@@ -15,6 +15,9 @@ $(BIN): $(OBJ)
 
 .c.o:
 	$(ARCH)-gcc $(CFLAGS) -mno-red-zone -c $< -o $@
+
+.s.o:
+	nasm -felf64 $< -o $@
 
 all: $(BIN)
 

@@ -48,8 +48,13 @@ struct idt_entry_struct
 } __attribute__((packed));
 typedef struct idt_entry_struct idt_entry_t;
 
+struct registers_struct
+{
+    uint64_t rax, rbx, rcx, rdx;
+};
+typedef struct registers_struct registers_t;
+
 // initialize descriptor tables
 void init_descriptors();
-
 
 #endif

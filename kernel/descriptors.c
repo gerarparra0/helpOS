@@ -1,4 +1,6 @@
 #include "descriptors.h"
+#include "interrupts.h"
+#include "framebuffer.h"
 
 // we need 5 entries
 // gdt_entries[0] always null
@@ -16,7 +18,7 @@ static void gdt_init();
 static void gdt_set_gate(uint8_t number, uint32_t base, uint32_t limit, uint8_t access, uint8_t granularity);
 
 // for now only make the first 31 faults
-idt_entry_t     idt_entries[31];
+idt_entry_t     idt_entries[32];
 idt_ptr_t       idt_ptr;
 
 static void idt_init();
@@ -58,9 +60,7 @@ static void gdt_init()
     gdt_set_gate(4, 0x0, 0x0, 0x80, 0x0);
     
     // flush gdt
-    asm volatile("lgdt %0;"
-                  :
-                  : "m" (gdt_ptr));
+    asm volatile("lgdt %0;": : "m" (gdt_ptr));
 }
 
 static void gdt_set_gate(uint8_t number, uint32_t base, uint32_t limit, uint8_t access, uint8_t granularity)
@@ -78,21 +78,51 @@ static void gdt_set_gate(uint8_t number, uint32_t base, uint32_t limit, uint8_t 
 
 static void idt_init()
 {
-    /*
-    IST Field (Interrupt and Trap Gates). Bits 2:0 of byte +4. Long-mode interrupt gate and trap gate
-    descriptors contain a new, 3-bit interrupt-stack-table (IST) field not present in legacy gate descriptors.
-    The IST field is used as an index into the IST portion of a long-mode TSS. If the IST field is not 0, the
-    index references an IST pointer in the TSS, which the processor loads into the RSP register when an
-    interrupt occurs. If the IST index is 0, the processor uses the legacy stack-switching mechanism (with
-    some modifications) when an interrupt occurs. See “Interrupt-Stack Table” on page 259 for more
-    information.
-    */
+    idt_ptr.base = (uint64_t)&idt_entries;
+    idt_ptr.limit = sizeof(idt_entry_t) * 32 - 1;
 
-    // next implement and install all ISR handlers according to the AMD64 manual
+    // 0x8 is the code kernel code segment (each GDT entry is 8 bytes), to be used as the selector of the interrupt routines
+    // 0 IST for now
+    // 0x8E: P = 1, DPL = 00, 0, Interrupt Gate (E)
+    idt_set_gate(0, (uint64_t)interrupt0, 0x8, 0x0, 0x8E);
+    idt_set_gate(1, (uint64_t)interrupt1, 0x8, 0x0, 0x8E);
+    idt_set_gate(2, (uint64_t)interrupt2, 0x8, 0x0, 0x8E);
+    idt_set_gate(3, (uint64_t)interrupt3, 0x8, 0x0, 0x8E);
+    idt_set_gate(4, (uint64_t)interrupt4, 0x8, 0x0, 0x8E);
+    idt_set_gate(5, (uint64_t)interrupt5, 0x8, 0x0, 0x8E);
+    idt_set_gate(6, (uint64_t)interrupt6, 0x8, 0x0, 0x8E);
+    idt_set_gate(7, (uint64_t)interrupt7, 0x8, 0x0, 0x8E);
+    idt_set_gate(8, (uint64_t)interrupt8, 0x8, 0x0, 0x8E);
+    idt_set_gate(9, (uint64_t)interrupt9, 0x8, 0x0, 0x8E);
+    idt_set_gate(10, (uint64_t)interrupt10, 0x8, 0x0, 0x8E);
+    idt_set_gate(11, (uint64_t)interrupt11, 0x8, 0x0, 0x8E);
+    idt_set_gate(12, (uint64_t)interrupt12, 0x8, 0x0, 0x8E);
+    idt_set_gate(13, (uint64_t)interrupt13, 0x8, 0x0, 0x8E);
+    idt_set_gate(14, (uint64_t)interrupt14, 0x8, 0x0, 0x8E);
+    idt_set_gate(15, (uint64_t)interrupt15, 0x8, 0x0, 0x8E);
+    idt_set_gate(16, (uint64_t)interrupt16, 0x8, 0x0, 0x8E);
+    idt_set_gate(17, (uint64_t)interrupt17, 0x8, 0x0, 0x8E);
+    idt_set_gate(18, (uint64_t)interrupt18, 0x8, 0x0, 0x8E);
+    idt_set_gate(19, (uint64_t)interrupt19, 0x8, 0x0, 0x8E);
+    idt_set_gate(20, (uint64_t)interrupt20, 0x8, 0x0, 0x8E);
+    idt_set_gate(21, (uint64_t)interrupt21, 0x8, 0x0, 0x8E);
+    idt_set_gate(22, (uint64_t)interrupt22, 0x8, 0x0, 0x8E);
+    idt_set_gate(23, (uint64_t)interrupt23, 0x8, 0x0, 0x8E);
+    idt_set_gate(24, (uint64_t)interrupt24, 0x8, 0x0, 0x8E);
+    idt_set_gate(25, (uint64_t)interrupt25, 0x8, 0x0, 0x8E);
+    idt_set_gate(26, (uint64_t)interrupt26, 0x8, 0x0, 0x8E);
+    idt_set_gate(27, (uint64_t)interrupt27, 0x8, 0x0, 0x8E);
+    idt_set_gate(28, (uint64_t)interrupt28, 0x8, 0x0, 0x8E);
+    idt_set_gate(29, (uint64_t)interrupt29, 0x8, 0x0, 0x8E);
+    idt_set_gate(30, (uint64_t)interrupt30, 0x8, 0x0, 0x8E);
+    idt_set_gate(31, (uint64_t)interrupt31, 0x8, 0x0, 0x8E);
+
+    asm volatile("lidt %0": :"m"(idt_ptr));
 }
 
 static void idt_set_gate(uint8_t number, uint64_t offset, uint16_t selector, uint8_t ist, uint8_t access)
 {
+    // some debug info
     idt_entries[number].offset_low      = offset & 0xFFFF;
     idt_entries[number].offset_middle   = (offset >> 16) & 0xFFFF;
     idt_entries[number].offset_high     = (offset >> 32) & 0xFFFFFFFF;
@@ -101,4 +131,10 @@ static void idt_set_gate(uint8_t number, uint64_t offset, uint16_t selector, uin
 
     idt_entries[number].ist             = ist & 0x07;
     idt_entries[number].access          = access;
+}
+
+void interrupt_handler(uint64_t error, uint64_t interrupt_n, uint64_t rflags)
+{
+    fb_puts("Interrupt "); fb_print_dec(interrupt_n); fb_puts(" fired with error code: ");
+    fb_print_hex(error); fb_puts(" RFLAGS register: "); fb_print_hex(rflags); fb_putc('\n'); 
 }
