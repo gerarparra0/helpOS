@@ -1,0 +1,4 @@
+img/*.bin
+img/*.rom
+kernel/*.o
+kernel/.vscode
