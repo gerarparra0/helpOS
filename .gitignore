@@ -1,4 +1,6 @@
 img/*.bin
 img/*.rom
 kernel/*.o
+kernel/*.sym
+kernel/*.elf
 kernel/.vscode
