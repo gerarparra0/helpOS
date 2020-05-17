@@ -46,6 +46,12 @@ void fb_putchar(unsigned short int c, int x, int y, uint32_t fg, uint32_t bg)
         glyph += bytesperline;
         offs += bootboot.fb_scanline;
     }
+
+    if(x >= bootboot.fb_width)
+    {
+        fb_x = 0;
+        fb_y++;
+    }
 }
 
 // print a string
@@ -79,40 +85,73 @@ void fb_putc(unsigned short int c)
             fb_x++;
             break;
     }
-
-    if(fb_x >= bootboot.fb_width)
-    {
-        fb_x = 0;
-        fb_y++;
-    }
 }
 
 // for now these routines print the numbers in reverse :(
 // need to find an algorithm to reverse them before having kmalloc()
-void fb_print_hex(long int dec)
+void fb_print_hex(long int hex)
 {
-    char* hex_table = "0123456789ABCDEF";
-
-    fb_puts("0x");
-
-    if(dec == 0)
+    if(hex == 0)
         fb_putc('0');
+    
     else
-        while(dec)
+    {
+        // i is the 'size' of the number
+        // t_i is to remember i so we can reset the fb_x
+        long int copy = hex;
+        int i = 0, t_i = 0;
+
+        while(copy)
         {
-            fb_putc(hex_table[dec%16]);
-            dec /= 16;
+            i++;
+            copy /= 16;
         }
+
+        t_i = i;
+
+        while(hex)
+        {
+            if(hex%16 < 0xA)
+                fb_putchar((unsigned short)('0' + hex%16), (fb_x + i--) - 1, fb_y, 0xFFFFFFFF, 0x0);
+            else
+                fb_putchar((unsigned short)('A' + hex%16 - 10), (fb_x + i--) - 1, fb_y, 0xFFFFFFFF, 0x0);
+            
+            hex /= 16;
+        }
+
+        fb_x += t_i;
+    }
 }
 
 void fb_print_dec(long int dec)
 {   
     if(dec == 0)
+    {
         fb_putc('0');
+    }
+
     else
+    {
+        long int copy = dec;
+        // i is the 'size' of the number
+        // t_i is to remember i so we can reset the fb_x
+        int i = 0, t_i = 0;
+
+        while(copy)
+        {
+            i++;
+            copy /= 10;
+        }
+
+        // dont forget!
+        t_i = i;
+
         while(dec)
         {
-            fb_putc('0' + (dec%10));
+            fb_putchar((unsigned short)('0' + dec%10), (fb_x + i--) - 1, fb_y, 0xFFFFFFFF, 0x0);
             dec /= 10;
         }
+
+        fb_x += t_i;
+    }
 }

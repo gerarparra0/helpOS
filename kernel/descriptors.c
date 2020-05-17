@@ -130,5 +130,5 @@ static void idt_set_gate(uint8_t number, uint64_t offset, uint16_t selector, uin
 
 void interrupt_handler(registers_t registers)
 {
-    fb_puts("Interrupt "); fb_print_dec(registers.interrupt); fb_puts(" fired\n");
+    fb_puts("Interrupt "); fb_print_dec(registers.interrupt); fb_puts(" fired with error code "); fb_print_dec(registers.error); fb_putc('\n');
 }

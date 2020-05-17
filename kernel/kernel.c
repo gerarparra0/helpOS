@@ -10,11 +10,11 @@ void _start()
     // install 64bit drivers
     fb_puts("Installing Descriptors...\n");
     init_descriptors();
-    fb_puts("Descriptors Installed.\n");
+    fb_puts("Descriptors Installed.\n\n");
 
-    fb_puts("Interrupt test...\n");
-    int i = 40, y = 0;
-    i = i / y;
+    //fb_puts("Interrupt test...\n");
+    //int i = 40, y = 0;
+    //i = i / y;
 
     // hang for now
     while(1);

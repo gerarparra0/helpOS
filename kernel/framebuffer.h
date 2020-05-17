@@ -10,7 +10,7 @@ void fb_puts(char *s);
 void fb_putc(unsigned short int c);
 void fb_clear();
 
-void fb_print_hex(long int dec);
+void fb_print_hex(long int hex);
 void fb_print_dec(long int dec);
 
 #endif
