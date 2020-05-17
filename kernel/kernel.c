@@ -13,7 +13,8 @@ void _start()
     fb_puts("Descriptors Installed.\n");
 
     fb_puts("Interrupt test...\n");
-    asm volatile("#GP");
+    int i = 40, y = 0;
+    i = i / y;
 
     // hang for now
     while(1);

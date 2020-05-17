@@ -50,8 +50,9 @@ typedef struct idt_entry_struct idt_entry_t;
 
 struct registers_struct
 {
-    uint64_t rax, rbx, rcx, rdx;
-};
+    uint64_t interrupt, error;
+    uint64_t rip, cs, rflags, rsp, ss;              // pushed by the interrupt system
+} __attribute__((packed));
 typedef struct registers_struct registers_t;
 
 // initialize descriptor tables

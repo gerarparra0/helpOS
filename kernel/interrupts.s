@@ -2,8 +2,8 @@
 [global interrupt%1]
 interrupt%1:
     cli
-    push qword 0
-    push qword %1
+    push byte 0
+    push byte %1
     jmp isr_stub
 %endmacro
 
@@ -11,7 +11,7 @@ interrupt%1:
 [global interrupt%1]
 interrupt%1:
     cli
-    push qword %1
+    push byte %1
     jmp isr_stub
 %endmacro
 
@@ -51,10 +51,10 @@ INTERRUPT_NOERROR 31
 extern interrupt_handler
 isr_stub:
 
-    pushfq
+    ;pushfq
     call interrupt_handler
 
-    add rsp, 24
+    add rsp, 16
 
     sti
     iret

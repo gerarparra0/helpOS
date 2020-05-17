@@ -1,6 +1,8 @@
 img/*.bin
 img/*.rom
+img/*.img
+img/mkimg
 kernel/*.o
 kernel/*.sym
 kernel/*.elf
-kernel/.vscode
+.vscode

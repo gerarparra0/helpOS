@@ -48,6 +48,9 @@ initrd.rom: mkimg initrd.bin
 rom: initrd.rom
 	qemu-system-x86_64 -option-rom ../bootboot/bootboot.bin -option-rom initrd.rom -serial stdio
 
+rom-debug: initrd.rom
+	qemu-system-x86_64 -s -S -option-rom ../bootboot/bootboot.bin -option-rom initrd.rom -serial stdio
+
 kernel:
 	cd ../kernel && $(MAKE)
 

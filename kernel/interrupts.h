@@ -30,7 +30,7 @@
 
 #include "descriptors.h"
 
-void interrupt_handler(uint64_t error, uint64_t interrupt_n, uint64_t rflags);
+void interrupt_handler(registers_t registers);
 
 /*
 interrupt0()

@@ -95,18 +95,24 @@ void fb_print_hex(long int dec)
 
     fb_puts("0x");
 
-    while(dec)
-    {
-        fb_putc(hex_table[dec%16]);
-        dec /= 16;
-    }
+    if(dec == 0)
+        fb_putc('0');
+    else
+        while(dec)
+        {
+            fb_putc(hex_table[dec%16]);
+            dec /= 16;
+        }
 }
 
 void fb_print_dec(long int dec)
-{
-    while(dec)
-    {
-        fb_putc('0' + (dec%10));
-        dec /= 10;
-    }
+{   
+    if(dec == 0)
+        fb_putc('0');
+    else
+        while(dec)
+        {
+            fb_putc('0' + (dec%10));
+            dec /= 10;
+        }
 }
